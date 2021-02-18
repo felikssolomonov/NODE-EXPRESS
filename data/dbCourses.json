@@ -1,0 +1,20 @@
+[
+    {
+        "title": "Mongo",
+        "price": "5000",
+        "image": "https://pngimg.com/uploads/fire/fire_PNG6011.png",
+        "id": "da5d40dd-8dc9-4ab8-9c07-8d2b06724079"
+    },
+    {
+        "title": "React",
+        "price": "7000",
+        "image": "https://storage.googleapis.com/multi-static-content/previews/artage-io-thumb-f6e7f7656b189dfc0dcabe81e975555f.png",
+        "id": "22457514-e3f7-436a-a991-5d960331492b"
+    },
+    {
+        "title": "Node",
+        "price": "12000",
+        "image": "https://avatars.mds.yandex.net/get-pdb/245485/16630d28-229a-4fdf-9dfb-230cbfc9064e/orig",
+        "id": "2e9607b2-e78d-41ae-ba13-22139e76bac7"
+    }
+]
