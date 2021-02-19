@@ -6,6 +6,8 @@ exports.registerValidator = [
   body("email")
     .isEmail()
     .withMessage("enter correct email")
+    .normalizeEmail()
+    .trim()
     .custom(async (value, { req }) => {
       try {
         const candidate = await User.findOne({ email: value });
@@ -20,14 +22,26 @@ exports.registerValidator = [
     .isLength({ min: 6, max: 20 })
     .withMessage("incorrect length of password")
     .isAlphanumeric()
+    .trim()
     .withMessage({
       message: "password must contain letters and numbers",
       errorCode: 1,
     }),
-  body("confirmpassword").custom((value, { req }) => {
-    if (value !== req.body.password) {
-      throw new Error("Passwords do't coincide");
-    }
-    return true;
-  }),
+  body("confirmpassword")
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error("Passwords do't coincide");
+      }
+      return true;
+    })
+    .trim(),
+];
+
+exports.courseValidator = [
+  body("title")
+    .isLength({ min: 3, max: 20 })
+    .withMessage("error length")
+    .trim(),
+  body("price").isNumeric().withMessage("not a number"),
+  body("image", "url is not correct").isURL(),
 ];

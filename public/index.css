@@ -48,3 +48,12 @@
   background: rgba(255, 0, 0, 0.3);
   color: red;
 }
+
+.avatar {
+  width: 250px;
+  height: auto;
+  border-radius: 50%;
+  border-width: 6px;
+  border-style: groove;
+  border-color: pink;
+}

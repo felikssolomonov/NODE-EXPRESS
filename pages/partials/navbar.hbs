@@ -3,6 +3,9 @@
         <a href="/" class="brand-logo right">Сайт покупок</a>
         <ul id="nav-mobile" class="left hide-on-med-and-down">
             <li {{#if isHome}} class="active" {{/if}}><a href="/">Главная</a></li>
+            {{#if isAuth}}
+                <li {{#if isProfile}} class="active" {{/if}}><a href="/profile">Профиль</a></li>
+            {{/if}}
             <li {{#if isCourses}} class="active" {{/if}}><a href="/courses">Курсы</a></li>
             {{#if isAuth}}
                 <li {{#if isAdd}} class="active" {{/if}}><a href="/add">Добавить курс</a></li>
