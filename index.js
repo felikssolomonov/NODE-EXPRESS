@@ -16,24 +16,21 @@ const ordersRoutes = require("./routes/orders");
 const authRoutes = require("./routes/auth");
 const sessionMW = require("./middleware/variables");
 const userMW = require("./middleware/user");
-const csrf = require('csurf');
+const csrf = require("csurf");
 const flash = require("connect-flash");
 const app = express();
-
+const { connectionDB, sessionSecret } = require("./keys");
 const PORT = process.env.PORT || 3000;
-const password = "sviFRrX7Dv3hTUyv";
-const dbName = "historyContent";
-const connection =
-  "mongodb+srv://Daniel:" + password + "@cluster0.paa0o.mongodb.net/" + dbName;
 
 const hbs1 = exphbs.create({
   handlebars: allowInsecurePrototypeAccess(Handlebars),
   defaultLayout: "mainMain",
   extname: "hbs",
+  helpers: require("./utils/hbs-helpers"),
 });
 const store = new MongoStore({
   collection: "sessions",
-  uri: connection,
+  uri: connectionDB,
 });
 
 app.engine("hbs", hbs1.engine);
@@ -44,7 +41,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
-    secret: "code",
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     store: store,
@@ -64,7 +61,7 @@ app.use("/auth", authRoutes);
 
 const start = async () => {
   try {
-    await mongoose.connect(connection, {
+    await mongoose.connect(connectionDB, {
       useNewUrlParser: true,
       useFindAndModify: false,
       useUnifiedTopology: true,

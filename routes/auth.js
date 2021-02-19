@@ -1,14 +1,27 @@
 const { Router } = require("express");
 const bcryptjs = require("bcryptjs");
+const crypto = require("crypto");
 const User = require("../models/userModel");
 const router = Router();
+const nodemailer = require("nodemailer");
+const sendgrid = require("nodemailer-sendgrid-transport");
+const { sendGridKey } = require("../keys");
+const regEmail = require("../emails/registration");
+const resetEmail = require("../emails/reset");
+const transporter = nodemailer.createTransport(
+  sendgrid({
+    auth: {
+      api_key: sendGridKey,
+    },
+  })
+);
 
 router.get("/login", async (req, res) => {
   res.render("auth/login", {
     title: "Login",
     isLogin: true,
     loginError: req.flash("loginError"),
-    registerError: req.flash("registerError")
+    registerError: req.flash("registerError"),
   });
 });
 
@@ -65,6 +78,85 @@ router.post("/register", async (req, res) => {
       });
       await user.save();
       res.redirect("/auth/login#login");
+      await transporter.sendMail(regEmail(email));
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/reset", (req, res) => {
+  res.render("auth/reset", {
+    title: "forgot password",
+    error: req.flash("error"),
+  });
+});
+
+router.get("/password/:token", async (req, res) => {
+  if (!req.params.token) {
+    return res.redirect("/auth/login");
+  }
+  try {
+    const user = await User.findOne({
+      resetToken: req.params.token,
+      resetTokenExp: { $gt: Date.now() },
+    });
+    if (!user) {
+      return res.redirect("/auth/login");
+    } else {
+      res.render("auth/password", {
+        title: "Restore access",
+        error: req.flash("error"),
+        userId: user._id.toString(),
+        token: req.params.token,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.post("/reset", (req, res) => {
+  try {
+    crypto.randomBytes(32, async (err, buffer) => {
+      if (err) {
+        req.flash("error", "something went wrong, try again later...");
+        return res.redirect("/auth/reset");
+      }
+      const token = buffer.toString("hex");
+      const candidate = await User.findOne({ email: req.body.email });
+      if (candidate) {
+        candidate.resetToken = token;
+        candidate.resetTokenExp = Date.now() + 5 * 60 * 1000;
+        await candidate.save();
+        await transporter.sendMail(resetEmail(candidate.email, token));
+        res.redirect("/auth/login");
+      } else {
+        req.flash("error", "email not found");
+        res.redirect("/auth/reset");
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.post("/password", async (req, res) => {
+  try {
+    const user = await User.findOne({
+      _id: req.body.userId,
+      resetToken: req.body.token,
+      resetTokenExp: { $gt: Date.now() },
+    });
+    if (user) {
+      user.password = await bcryptjs.hash(req.body.password, 10);
+      user.resetToken = undefined;
+      user.resetTokenExp = undefined;
+      await user.save();
+      res.redirect("/auth/login");
+    } else {
+      req.flash("error", "token expired");
+      res.redirect("/auth/login");
     }
   } catch (error) {
     console.log(error);

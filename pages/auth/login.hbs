@@ -8,7 +8,7 @@
         </div>
         <div id="login" class="col s6 offset-s3">
             {{#if loginError}}
-                <p class="alert">{{loginError}}</p>
+            <p class="alert">{{loginError}}</p>
             {{/if}}
             <h3>Аутентификация</h3>
             <form action="/auth/login" method="POST">
@@ -24,6 +24,7 @@
                     <span class="helper-text" data-error="Write an Password"></span>
                 </div>
                 <input type="hidden" name="_csrf" value="{{csurf}}">
+                <p><a href="/auth/reset">Forgot password?</a></p>
                 <button class="btn btn-primary" type="submit">
                     Войти
                 </button>
@@ -31,13 +32,12 @@
         </div>
         <div id="register" class="col s6 offset-s3">
             {{#if registerError}}
-                <p class="alert">{{registerError}}</p>
+            <p class="alert">{{registerError}}</p>
             {{/if}}
             <h3>Регистрация</h3>
             <form action="/auth/register" method="POST">
                 <div class="input-field">
-                    <input placeholder="placeholder" name="name" id="name" type="text" class="validate"
-                        required>
+                    <input placeholder="placeholder" name="name" id="name" type="text" class="validate" required>
                     <label for="name">Name</label>
                     <span class="helper-text" data-error="Write an Name"></span>
                 </div>
@@ -53,8 +53,8 @@
                     <span class="helper-text" data-error="Write an Password"></span>
                 </div>
                 <div class="input-field">
-                    <input placeholder="placeholder" name="confirmpassword" id="confirmpassword" type="password" class="validate"
-                        required>
+                    <input placeholder="placeholder" name="confirmpassword" id="confirmpassword" type="password"
+                        class="validate" required>
                     <label for="confirmpassword">Password confirm</label>
                     <span class="helper-text" data-error="Write an Password confirm"></span>
                 </div>
