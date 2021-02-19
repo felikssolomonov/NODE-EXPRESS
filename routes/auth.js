@@ -1,6 +1,8 @@
 const { Router } = require("express");
 const bcryptjs = require("bcryptjs");
 const crypto = require("crypto");
+const { validationResult } = require("express-validator");
+const { registerValidator } = require("../utils/validators");
 const User = require("../models/userModel");
 const router = Router();
 const nodemailer = require("nodemailer");
@@ -59,10 +61,15 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/register", async (req, res) => {
+router.post("/register", registerValidator, async (req, res) => {
   try {
     const { name, email, password, confirmpassword } = req.body;
     const candidate = await User.findOne({ email });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      req.flash("registerError", errors.array()[0].msg);
+      return res.status(422).redirect("/auth/login#register");
+    }
     if (candidate) {
       req.flash("registerError", "email duplicate in db");
       res.redirect("/auth/login#register");
