@@ -8,6 +8,8 @@ const {
   allowInsecurePrototypeAccess,
 } = require("@handlebars/allow-prototype-access");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
+const compression = require("compression");
 const homeRoutes = require("./routes/home");
 const coursesRoutes = require("./routes/courses");
 const addRoutes = require("./routes/add");
@@ -54,6 +56,8 @@ app.use(
 app.use(fileMW.single("avatar"));
 app.use(csrf());
 app.use(flash());
+app.use(helmet());
+app.use(compression());
 app.use(sessionMW);
 app.use(userMW);
 
